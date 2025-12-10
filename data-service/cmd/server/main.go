@@ -2,22 +2,24 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/iJoyRide/ctc-esg/data-service/internal/api/health"
+	"github.com/iJoyRide/ctc-esg/data-service/internal/config"
+	"github.com/iJoyRide/ctc-esg/data-service/internal/ingestion"
 )
 
 func main() {
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("FATAL: Required environment variable PORT is not set. Service cannot start.")
+	cfg := config.Load()
+	mqttService := ingestion.NewMQTTService(cfg)
+	if err := mqttService.Init(mqttService.HandleSensorData); err != nil {
+		log.Fatalf("[MQTT] Failed to initialize: %v", err)
 	}
 
-	router := gin.Default()
+	r := gin.Default()
 
-	health.RegisterRoutes(router.Group("/health"))
+	health.RegisterRoutes(r.Group("/health"))
 
-	log.Fatal(router.Run(":" + port))
+	log.Fatal(r.Run(":" + cfg.Port))
 }
