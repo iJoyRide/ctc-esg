@@ -2,21 +2,32 @@
 
 CONFIG_FILE=/mosquitto/config/mosquitto.conf
 
-# Check if config exists, if not create a default one
+echo "Ensuring mosquitto.conf contains listener config..."
+
 if [ ! -f "$CONFIG_FILE" ]; then
-    echo "mosquitto.conf not found, creating default config..."
+    echo "Creating mosquitto.conf..."
     cat <<EOL > "$CONFIG_FILE"
-listener 1883
+listener 1883 0.0.0.0
 allow_anonymous true
 persistence true
 persistence_location /mosquitto/data/
-log_dest file /mosquitto/log/mosquitto.log
+log_dest stdout
+log_type warning
 EOL
+else
+    if ! grep -q "listener 1883" "$CONFIG_FILE"; then
+        echo "Adding missing listener..."
+        echo "listener 1883 0.0.0.0" >> "$CONFIG_FILE"
+        echo "allow_anonymous true" >> "$CONFIG_FILE"
+    fi
+
+    if ! grep -q "log_type" "$CONFIG_FILE"; then
+        echo "log_type warning" >> "$CONFIG_FILE"
+    fi
+
+    echo "Using existing mosquitto.conf"
 fi
 
-echo "mosquitto.conf already exists"
-echo "Mosquitto broker started with config file"
+echo "Mosquitto starting..."
 
-# Start Mosquitto
 exec mosquitto -c "$CONFIG_FILE"
-
