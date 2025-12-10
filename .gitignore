@@ -240,3 +240,8 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+mosquitto/data/
+mosquitto/log/
+mosquitto/db/
+mosquitto/*.db

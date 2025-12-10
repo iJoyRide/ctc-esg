@@ -12,6 +12,23 @@ services:
       - data_pipeline_network
     restart: unless-stopped
 
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: data-pipeline-mosquitto
+    ports: 
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+    - ./mosquitto/config:/mosquitto/config
+    - ./mosquitto/data:/mosquitto/data
+    - ./mosquitto/log:/mosquitto/log
+    - ./start-mosquitto.sh:/start-mosquitto.sh
+    command: ["/bin/sh", "/start-mosquitto.sh"]
+    networks:
+      - data_pipeline_network
+    restart: unless-stopped
+
+
 networks:
   data_pipeline_network:
     driver: bridge
