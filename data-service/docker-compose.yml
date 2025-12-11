@@ -19,14 +19,37 @@ services:
       - "1883:1883"
       - "9001:9001"
     volumes:
-      # Use Docker named volumes instead of local project folders
       - mosquitto_config:/mosquitto/config
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
-
-      # Keep your startup script mounted from local repo
       - ./start-mosquitto.sh:/start-mosquitto.sh
     command: ["/bin/sh", "/start-mosquitto.sh"]
+    networks:
+      - data_pipeline_network
+    restart: unless-stopped
+  
+  timescale:
+    image: timescale/timescaledb:latest-pg14
+    container_name: data-pipeline-timescale
+    environment:
+      POSTGRES_USER: ${TS_USER}
+      POSTGRES_PASSWORD: ${TS_PASSWORD}
+      POSTGRES_DB: ${TS_DB}
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+    networks:
+      - data_pipeline_network
+    restart: unless-stopped  
+
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: pgweb
+    ports:
+      - "8081:8081"
+    environment:
+      PGWEB_DATABASE_URL: postgres://${TS_USER}:${TS_PASSWORD}@timescale:5432/${TS_DB}?sslmode=disable
+    depends_on:
+      - timescale
     networks:
       - data_pipeline_network
     restart: unless-stopped
@@ -39,3 +62,4 @@ volumes:
   mosquitto_config:
   mosquitto_data:
   mosquitto_log:
+  timescale-data:

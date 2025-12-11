@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/iJoyRide/ctc-esg/data-service/internal/api/health"
 	"github.com/iJoyRide/ctc-esg/data-service/internal/config"
-	"github.com/iJoyRide/ctc-esg/data-service/internal/ingestion"
+	"github.com/iJoyRide/ctc-esg/data-service/internal/ingestion/mqtt"
 )
 
 func main() {
 
 	cfg := config.Load()
-	mqttService := ingestion.NewMQTTService(cfg)
+	mqttService := mqtt.NewMQTTService(cfg)
 	if err := mqttService.Init(mqttService.HandleSensorData); err != nil {
 		log.Fatalf("[MQTT] Failed to initialize: %v", err)
 	}
