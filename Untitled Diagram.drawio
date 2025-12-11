@@ -127,7 +127,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="6uxMH5rwksxRaY5lIuK1-2" parent="1" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Cache_Redis_Product.svg;" value="Redis" vertex="1">
-          <mxGeometry height="42" width="50" x="162" y="748" as="geometry" />
+          <mxGeometry height="42" width="50" x="123" y="748" as="geometry" />
         </mxCell>
         <mxCell id="6uxMH5rwksxRaY5lIuK1-6" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/databases/SQL_Database.svg;" value="Timescale DB" vertex="1">
           <mxGeometry height="64" width="48" x="450" y="309" as="geometry" />
