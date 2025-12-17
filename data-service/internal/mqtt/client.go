@@ -1,6 +1,7 @@
 package mqtt
 
 import (
+	"log"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -12,8 +13,8 @@ type MQTTService struct {
 	cfg    *config.Config
 }
 
-func NewMQTTService(cfg *config.Config) *MQTTService {
-	return &MQTTService{cfg: cfg}
+func NewMQTTService(configuration *config.Config) *MQTTService {
+	return &MQTTService{cfg: configuration}
 }
 
 func (m *MQTTService) Init(handler mqtt.MessageHandler) error {
@@ -32,5 +33,7 @@ func (m *MQTTService) Init(handler mqtt.MessageHandler) error {
 	m.client = mqtt.NewClient(opts)
 	token := m.client.Connect()
 	token.Wait()
+	log.Printf("[MQTT] initialised")
 	return token.Error()
+
 }

@@ -15,6 +15,12 @@ type Config struct {
 		Topic    string
 		QOS      int
 	}
+
+	Database struct {
+		User     string
+		Password string
+		DB       string
+	}
 }
 
 func Load() *Config {
@@ -28,6 +34,10 @@ func Load() *Config {
 	cfg.MQTT.Topic = viper.GetString("MQTT_TOPIC")
 	cfg.MQTT.QOS = viper.GetInt("MQTT_QOS")
 
+	cfg.Database.User = viper.GetString("TS_USER")
+	cfg.Database.Password = viper.GetString("TS_PASSWORD")
+	cfg.Database.DB = viper.GetString("TS_DB")
+
 	validate(cfg)
 
 	return cfg
@@ -38,6 +48,10 @@ func validate(cfg *Config) {
 		"PORT":        cfg.Port,
 		"MQTT_BROKER": cfg.MQTT.Broker,
 		"MQTT_TOPIC":  cfg.MQTT.Topic,
+
+		"TS_USER":     cfg.Database.User,
+		"TS_PASSWORD": cfg.Database.Password,
+		"TS_DB":       cfg.Database.DB,
 	}
 
 	for key, val := range required {
