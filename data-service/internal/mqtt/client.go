@@ -1,19 +1,25 @@
 package mqtt
 
 import (
+	"log"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/iJoyRide/ctc-esg/data-service/internal/config"
+	"github.com/iJoyRide/ctc-esg/data-service/internal/database"
 )
 
 type MQTTService struct {
 	client mqtt.Client
 	cfg    *config.Config
+	db     *database.DatabaseService
 }
 
-func NewMQTTService(cfg *config.Config) *MQTTService {
-	return &MQTTService{cfg: cfg}
+func NewMQTTService(configuration *config.Config, dbService *database.DatabaseService) *MQTTService {
+	return &MQTTService{
+		cfg: configuration,
+		db:  dbService,
+	}
 }
 
 func (m *MQTTService) Init(handler mqtt.MessageHandler) error {
@@ -32,5 +38,7 @@ func (m *MQTTService) Init(handler mqtt.MessageHandler) error {
 	m.client = mqtt.NewClient(opts)
 	token := m.client.Connect()
 	token.Wait()
+	log.Printf("[MQTT] initialised")
 	return token.Error()
+
 }

@@ -1,4 +1,4 @@
-package health
+package handlers // Changed from "package health"
 
 import "github.com/gin-gonic/gin"
 
