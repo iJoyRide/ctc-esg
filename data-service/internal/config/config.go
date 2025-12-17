@@ -38,12 +38,12 @@ func Load() *Config {
 	cfg.Database.Password = viper.GetString("TS_PASSWORD")
 	cfg.Database.DB = viper.GetString("TS_DB")
 
-	validate(cfg)
+	Validate(cfg)
 
 	return cfg
 }
 
-func validate(cfg *Config) {
+func Validate(cfg *Config) {
 	required := map[string]string{
 		"PORT":        cfg.Port,
 		"MQTT_BROKER": cfg.MQTT.Broker,

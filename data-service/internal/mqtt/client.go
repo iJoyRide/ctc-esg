@@ -6,15 +6,20 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/iJoyRide/ctc-esg/data-service/internal/config"
+	"github.com/iJoyRide/ctc-esg/data-service/internal/database"
 )
 
 type MQTTService struct {
 	client mqtt.Client
 	cfg    *config.Config
+	db     *database.DatabaseService
 }
 
-func NewMQTTService(configuration *config.Config) *MQTTService {
-	return &MQTTService{cfg: configuration}
+func NewMQTTService(configuration *config.Config, dbService *database.DatabaseService) *MQTTService {
+	return &MQTTService{
+		cfg: configuration,
+		db:  dbService,
+	}
 }
 
 func (m *MQTTService) Init(handler mqtt.MessageHandler) error {

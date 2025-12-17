@@ -7,9 +7,8 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
-
 	"github.com/iJoyRide/ctc-esg/data-service/internal/config"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type DatabaseService struct {
@@ -48,7 +47,16 @@ func (d *DatabaseService) Init() error {
 	}
 
 	d.db = dbEngine
-	log.Printf("[Database] initialised")
+	log.Println("[Database] Connection established")
+
+	// Create schema after connection is established
+	ctx2, cancel2 := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel2()
+
+	if err := d.createSchema(ctx2); err != nil {
+		return fmt.Errorf("failed to initialize schema: %w", err)
+	}
+
 	return nil
 }
 
