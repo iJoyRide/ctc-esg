@@ -1,4 +1,5 @@
 # High Level Diagram
+<img width="1213" height="1136" alt="image" src="https://github.com/user-attachments/assets/0b4b4c66-3931-4305-b2a6-4d6fddbd26e6" />
 
 # Setup Instructions
 
