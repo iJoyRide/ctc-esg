@@ -1,0 +1,48 @@
+# ───────────────
+# 1) Builder stage
+# ───────────────
+FROM python:3.13-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /backend
+
+# Build tools (only if native deps are needed)
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y build-essential \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+RUN pip install --no-cache-dir uv
+
+# Copy dependency files first (better layer caching)
+COPY backend/pyproject.toml backend/uv.lock ./
+
+# Create venv + install EXACT locked deps
+RUN uv venv \
+ && uv sync --frozen --no-dev
+
+# Copy app code
+COPY backend/app ./app
+
+# ───────────────
+# 2) Runtime stage
+# ───────────────
+FROM python:3.13-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /backend
+
+# Copy only what is needed
+COPY --from=builder /backend/.venv /backend/.venv
+COPY --from=builder /backend/app /backend/app
+
+# Activate venv implicitly
+ENV PATH="/backend/.venv/bin:$PATH"
+
+EXPOSE 8081
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8081", "--workers", "1"]
