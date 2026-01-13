@@ -8,12 +8,15 @@ import (
 	"time"
 
 	"github.com/iJoyRide/ctc-esg/data-service/internal/config"
+	db "github.com/iJoyRide/ctc-esg/data-service/internal/database/sqlc"
+
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 type DatabaseService struct {
-	db  *sql.DB
-	cfg *config.Config
+	db      *sql.DB
+	cfg     *config.Config
+	queries *db.Queries
 }
 
 func NewDatabaseService(configuration *config.Config) *DatabaseService {
@@ -47,15 +50,16 @@ func (d *DatabaseService) Init() error {
 	}
 
 	d.db = dbEngine
+	d.queries = db.New(d.db)
 	log.Println("[Database] Connection established")
 
 	// Create schema after connection is established
-	ctx2, cancel2 := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel2()
+	// ctx2, cancel2 := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel2()
 
-	if err := d.createSchema(ctx2); err != nil {
-		return fmt.Errorf("failed to initialize schema: %w", err)
-	}
+	// if err := d.createSchema(ctx2); err != nil {
+	// 	return fmt.Errorf("failed to initialize schema: %w", err)
+	// }
 
 	return nil
 }
@@ -65,4 +69,11 @@ func (d *DatabaseService) Close() error {
 		return nil
 	}
 	return d.db.Close()
+}
+
+func (d *DatabaseService) Queries() *db.Queries {
+	if d.queries == nil {
+		log.Println("[Database] WARNING: queries is nil (did you call Init?)")
+	}
+	return d.queries
 }

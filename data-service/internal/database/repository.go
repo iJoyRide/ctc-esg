@@ -3,27 +3,19 @@ package database
 import (
 	"context"
 
-	"github.com/iJoyRide/ctc-esg/data-service/internal/models"
+	db "github.com/iJoyRide/ctc-esg/data-service/internal/database/sqlc"
 )
 
-func (d *DatabaseService) Insert(
-	ctx context.Context,
-	reading models.SensorReading,
-) error {
+type Repository struct {
+	q *db.Queries
+}
 
-	query := `
-		INSERT INTO sensor_readings (timestamp, sensor, sensor_id, value)
-		VALUES ($1, $2, $3, $4)
-	`
+func NewRepository(dbService *DatabaseService) *Repository {
+	return &Repository{
+		q: dbService.Queries(),
+	}
+}
 
-	_, err := d.db.ExecContext(
-		ctx,
-		query,
-		reading.Timestamp,
-		reading.Sensor,
-		reading.SensorID,
-		reading.Value,
-	)
-
-	return err
+func (r *Repository) Insert(ctx context.Context, params db.InsertSensorReadingParams) error {
+	return r.q.InsertSensorReading(ctx, params)
 }

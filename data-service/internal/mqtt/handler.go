@@ -12,14 +12,14 @@ import (
 
 // HandleSensorData is called whenever a message arrives on the subscribed topic
 func (m *MQTTService) HandleSensorData(_ mqtt.Client, msg mqtt.Message) {
-	var reading models.SensorReading
+	var payload models.SensorReadingPayload
 
-	if err := json.Unmarshal(msg.Payload(), &reading); err != nil {
+	if err := json.Unmarshal(msg.Payload(), &payload); err != nil {
 		log.Printf("[MQTT] Invalid payload: %v", err)
 		return
 	}
 
-	if err := reading.Validate(); err != nil {
+	if err := payload.Validate(); err != nil {
 		log.Printf("[MQTT] Invalid sensor reading: %v", err)
 		return
 	}
@@ -27,10 +27,10 @@ func (m *MQTTService) HandleSensorData(_ mqtt.Client, msg mqtt.Message) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := m.db.Insert(ctx, reading); err != nil {
+	if err := m.repo.Insert(ctx, payload.ToInsertParams()); err != nil {
 		log.Printf("[DB] insert failed: %v", err)
 		return
 	}
 
-	log.Printf("[MQTT] Received sensor reading: %+v", reading)
+	log.Printf("[MQTT] Received sensor reading: %+v", payload)
 }
