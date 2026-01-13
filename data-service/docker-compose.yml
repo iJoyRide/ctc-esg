@@ -8,9 +8,13 @@ services:
       - "8080:8080"
     env_file:
       - .env
+    depends_on:
+      timescale:
+        condition: service_healthy
     networks:
       - data_pipeline_network
     restart: unless-stopped
+
 
   mosquitto:
     image: eclipse-mosquitto
@@ -27,6 +31,20 @@ services:
     networks:
       - data_pipeline_network
     restart: unless-stopped
+
+  mqtt-explorer:
+    image: smeagolworms4/mqtt-explorer
+    container_name: data-pipeline-mqtt-explorer
+    ports:
+      - "4000:4000"
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+    depends_on:
+      - mosquitto
+    networks:
+      - data_pipeline_network
+    restart: unless-stopped
   
   timescale:
     image: timescale/timescaledb:latest-pg14
@@ -39,7 +57,13 @@ services:
       - timescale-data:/var/lib/postgresql/data
     networks:
       - data_pipeline_network
-    restart: unless-stopped  
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -h localhost"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   pgweb:
     image: sosedoff/pgweb
@@ -49,10 +73,25 @@ services:
     environment:
       PGWEB_DATABASE_URL: postgres://${TS_USER}:${TS_PASSWORD}@timescale:5432/${TS_DB}?sslmode=disable
     depends_on:
-      - timescale
+      timescale:
+        condition: service_healthy
     networks:
       - data_pipeline_network
     restart: unless-stopped
+  
+  migrate:
+    image: migrate/migrate
+    container_name: data-pipeline-migrate
+    env_file:
+      - .env
+    volumes:
+      - ./internal/database/migrations:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://${TS_USER}:${TS_PASSWORD}@timescale:5432/${TS_DB}?sslmode=disable", "up"]
+    depends_on:
+      timescale:
+        condition: service_healthy
+    networks:
+      - data_pipeline_network
 
 networks:
   data_pipeline_network:

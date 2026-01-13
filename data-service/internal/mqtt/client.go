@@ -12,13 +12,13 @@ import (
 type MQTTService struct {
 	client mqtt.Client
 	cfg    *config.Config
-	db     *database.DatabaseService
+	repo   *database.Repository
 }
 
-func NewMQTTService(configuration *config.Config, dbService *database.DatabaseService) *MQTTService {
+func NewMQTTService(configuration *config.Config, repository *database.Repository) *MQTTService {
 	return &MQTTService{
-		cfg: configuration,
-		db:  dbService,
+		cfg:  configuration,
+		repo: repository,
 	}
 }
 
