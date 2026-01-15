@@ -10,15 +10,17 @@ type Server struct {
 	router *gin.Engine
 	mqtt   *mqtt.MQTTService
 	db     *database.DatabaseService
+	repo *database.Repository
 }
 
-func NewServer(mqttService *mqtt.MQTTService, dbService *database.DatabaseService) *Server {
+func NewServer(mqttService *mqtt.MQTTService, dbService *database.DatabaseService, repoService *database.Repository) *Server {
 	router := gin.Default()
 
 	s := &Server{
 		router: router,
 		mqtt:   mqttService,
 		db:     dbService,
+		repo: repoService,
 	}
 
 	s.RegisterRoutes()

@@ -27,7 +27,7 @@ func (m *MQTTService) HandleSensorData(_ mqtt.Client, msg mqtt.Message) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := m.repo.Insert(ctx, payload.ToInsertParams()); err != nil {
+	if err := m.repo.InsertSensorReading(ctx, payload.ToInsertParams()); err != nil {
 		log.Printf("[DB] insert failed: %v", err)
 		return
 	}
