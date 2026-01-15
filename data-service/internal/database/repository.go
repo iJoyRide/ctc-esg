@@ -6,6 +6,12 @@ import (
 	db "github.com/iJoyRide/ctc-esg/data-service/internal/database/sqlc"
 )
 
+type SensorRepository interface {
+    InsertSensorReading(ctx context.Context, params db.InsertSensorReadingParams) error
+    GetReadingsByBucket(ctx context.Context, params db.GetReadingsByBucketParams) ([]db.GetReadingsByBucketRow, error)
+    CheckSensorIdExists(ctx context.Context, sensorID string) (bool, error)
+}
+
 type Repository struct {
 	q *db.Queries
 }
@@ -16,6 +22,14 @@ func NewRepository(dbService *DatabaseService) *Repository {
 	}
 }
 
-func (r *Repository) Insert(ctx context.Context, params db.InsertSensorReadingParams) error {
+func (r *Repository) InsertSensorReading(ctx context.Context, params db.InsertSensorReadingParams) error {
 	return r.q.InsertSensorReading(ctx, params)
+}
+
+func (r *Repository) GetReadingsByBucket(ctx context.Context, params db.GetReadingsByBucketParams) ([]db.GetReadingsByBucketRow, error) {
+	return r.q.GetReadingsByBucket(ctx, params)
+}
+
+func (r *Repository) CheckSensorIdExists(ctx context.Context, sensorID string) (bool, error) {
+    return r.q.CheckSensorIdExists(ctx, sensorID)
 }

@@ -24,6 +24,6 @@ func main() {
 		log.Fatalf("[MQTT] Failed to initialize: %v", err)
 	}
 
-	srv := server.NewServer(mqttService, dbService)
+	srv := server.NewServer(mqttService, dbService, repo)
 	log.Fatal(srv.Run(":" + cfg.Port))
 }
