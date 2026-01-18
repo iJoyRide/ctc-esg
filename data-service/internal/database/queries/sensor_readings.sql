@@ -12,7 +12,7 @@ SELECT
 FROM sensor_readings
 WHERE sensor_id = sqlc.arg('sensor_id') 
   AND timestamp >= sqlc.arg('start_time') 
-  AND timestamp <= sqlc.arg('end_time')
+  AND timestamp <  sqlc.arg('end_time')
 GROUP BY bucket
 ORDER BY bucket ASC;
 
