@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     container_name: data-pipeline-backend
-    expose:
-      - "8080"
+    ports: 
+      - "8083:8080"
     env_file:
       - .env
     depends_on:

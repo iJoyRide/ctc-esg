@@ -4,8 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     container_name: forecast-service-backend
+    env_file:
+      - backend/.env
     ports: 
-      - "8081:8081"
+      - "8084:8080"
     networks:
       - forecast_service_network
 
