@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.api.router import api_router
-from app.services.gin import gin_service
+from app.services.gin import get_gin_service, _gin_service
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -14,7 +14,8 @@ app.include_router(api_router)
 async def startup():
     
     try:
-        result = await gin_service.health_check()
+        gin = get_gin_service()
+        result = await gin.health_check()
         logger.info(f"Gin service is healthy: {result}")
     except Exception as e:
         logger.error(f"❌ Gin service health check failed: {e}")
@@ -23,4 +24,5 @@ async def startup():
         
 @app.on_event("shutdown")
 async def shutdown():
-    await gin_service.close()
+    if _gin_service:
+        await _gin_service.close()
