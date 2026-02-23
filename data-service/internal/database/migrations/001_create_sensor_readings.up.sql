@@ -1,9 +1,10 @@
 CREATE TABLE IF NOT EXISTS sensor_readings (
   timestamp TIMESTAMPTZ NOT NULL,
+  chiller_id TEXT NOT NULL,
   sensor_id TEXT NOT NULL,
   sensor TEXT NOT NULL,
   value DOUBLE PRECISION NOT NULL,
-  PRIMARY KEY (timestamp, sensor_id)
+  PRIMARY KEY (timestamp, sensor_id, sensor)
 );
 
 SELECT create_hypertable(

@@ -7,9 +7,10 @@ import (
 )
 
 type SensorRepository interface {
-    InsertSensorReading(ctx context.Context, params db.InsertSensorReadingParams) error
-    GetReadingsByBucket(ctx context.Context, params db.GetReadingsByBucketParams) ([]db.GetReadingsByBucketRow, error)
-    CheckSensorIdExists(ctx context.Context, sensorID string) (bool, error)
+	InsertSensorReading(ctx context.Context, params db.InsertSensorReadingParams) error
+	GetReadingsByBucket(ctx context.Context, params db.GetReadingsByBucketParams) ([]db.GetReadingsByBucketRow, error)
+	CheckSensorIdExists(ctx context.Context, sensorID string) (bool, error)
+	GetLatestReadingsBySensorID(ctx context.Context, chillerID string) ([]db.GetLatestReadingsBySensorIDRow, error)
 }
 
 type Repository struct {
@@ -31,5 +32,9 @@ func (r *Repository) GetReadingsByBucket(ctx context.Context, params db.GetReadi
 }
 
 func (r *Repository) CheckSensorIdExists(ctx context.Context, sensorID string) (bool, error) {
-    return r.q.CheckSensorIdExists(ctx, sensorID)
+	return r.q.CheckSensorIdExists(ctx, sensorID)
+}
+
+func (r *Repository) GetLatestReadingsBySensorID(ctx context.Context, chillerID string) ([]db.GetLatestReadingsBySensorIDRow, error) {
+	return r.q.GetLatestReadingsBySensorID(ctx, chillerID)
 }

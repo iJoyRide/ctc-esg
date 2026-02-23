@@ -17,5 +17,14 @@ GROUP BY bucket
 ORDER BY bucket ASC;
 
 -- name: InsertSensorReading :exec
-INSERT INTO sensor_readings (timestamp, sensor, sensor_id, value)
-VALUES ($1, $2, $3, $4);
+INSERT INTO sensor_readings (timestamp, sensor, sensor_id, chiller_id, value)
+VALUES ($1, $2, $3, $4, $5);
+
+-- name: GetLatestReadingsBySensorID :many
+SELECT DISTINCT ON (sensor)
+    sensor,
+    value,
+    timestamp
+FROM sensor_readings
+WHERE chiller_id = $1
+ORDER BY sensor, timestamp DESC;
