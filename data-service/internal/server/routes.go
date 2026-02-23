@@ -9,5 +9,6 @@ func (s *Server) RegisterRoutes() {
 	api := s.router.Group("/api/v1")
 	{
 		api.GET("/readings/bucket", readingsHandler.GetBucketedReadings)
+		api.GET("/readings/latest", readingsHandler.GetLatestReadings)
 	}
 }

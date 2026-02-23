@@ -11,6 +11,7 @@ type SensorReadingPayload struct {
 	Timestamp time.Time `json:"timestamp"`
 	Sensor    string    `json:"sensor"`
 	SensorID  string    `json:"sensor_id"`
+	ChillerID string    `json:"chiller_id"`
 	Value     float64   `json:"value"`
 }
 
@@ -32,6 +33,7 @@ func (s SensorReadingPayload) ToInsertParams() db.InsertSensorReadingParams {
 		Timestamp: s.Timestamp,
 		Sensor:    s.Sensor,
 		SensorID:  s.SensorID,
+		ChillerID: s.ChillerID,
 		Value:     s.Value,
 	}
 }

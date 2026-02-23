@@ -29,7 +29,6 @@ func (h *ReadingsHandler) GetBucketedReadings(c *gin.Context) {
 		return
 	}
 
-	
 	startTime, err := time.Parse(time.RFC3339, c.Query("start_time"))
 	if err != nil && c.Query("start_time") != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid start_time format. Use RFC3339 (e.g. 2006-01-02T15:04:05Z)"})
@@ -39,7 +38,7 @@ func (h *ReadingsHandler) GetBucketedReadings(c *gin.Context) {
 	endTime, err := time.Parse(time.RFC3339, c.Query("end_time"))
 	if err != nil && c.Query("end_time") != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid end_time format. Use RFC3339 (e.g. 2006-01-02T15:04:05Z)"})
-		return 
+		return
 	}
 
 	req := models.GetReadingsRequest{
@@ -61,4 +60,20 @@ func (h *ReadingsHandler) GetBucketedReadings(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, rows)
+}
+
+func (h *ReadingsHandler) GetLatestReadings(c *gin.Context) {
+	chillerID := c.Query("chiller_id")
+	if chillerID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "chiller_id is required"})
+		return
+	}
+
+	readings, err := h.repo.GetLatestReadingsBySensorID(c.Request.Context(), chillerID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, readings)
 }
