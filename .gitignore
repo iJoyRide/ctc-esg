@@ -245,3 +245,6 @@ mosquitto/data/
 mosquitto/log/
 mosquitto/db/
 mosquitto/*.db
+
+*xlsx
+*.pkl
